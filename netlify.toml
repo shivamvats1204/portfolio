@@ -1,0 +1,53 @@
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+
+# >>> shivam-lately (managed by scripts/integrate.mjs — begin)
+# ── routing ──────────────────────────────────────────────────────────────────
+# /lately/api/*  → served by the function (its `config.path`); functions run before redirects & static files.
+# Existing files (hashed assets, fonts, images, admin/index.html) are served as-is: these rewrites are NOT forced.
+
+[[redirects]]
+  from = "/lately/admin/*"
+  to = "/lately/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/lately/*"
+  to = "/lately/index.html"
+  status = 200
+
+# ── headers ──────────────────────────────────────────────────────────────────
+
+[[headers]]
+  for = "/lately/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; frame-src 'none'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+
+[[headers]]
+  for = "/lately/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/lately/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/lately/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/lately/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+    Referrer-Policy = "same-origin"
+# <<< shivam-lately (end)
